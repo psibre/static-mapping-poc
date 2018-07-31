@@ -13,9 +13,21 @@ dependencies {
     testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
 }
 
+sourceSets {
+    main {
+        groovy {
+            srcDirs = [layout.buildDirectory.dir('generatedSrc')]
+        }
+    }
+}
+
 tasks.register 'generateSrc', GenerateSource, {
     srcFile = file('fooBar.json')
     destDir = layout.buildDirectory.dir('generatedSrc')
+}
+
+compileGroovy {
+    dependsOn tasks.named('generateSrc')
 }
 
 test {
