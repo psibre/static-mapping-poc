@@ -19,8 +19,13 @@ sourceSets {
     }
 }
 
+tasks.register 'convertCsvToJson', ConvertCsvToJson, {
+    srcFile = file('fooBar.csv')
+    destFile = layout.buildDirectory.file('fooBar.json')
+}
+
 tasks.register 'generateSrc', GenerateSource, {
-    srcFile = file('fooBar.json')
+    srcFile = tasks.named('convertCsvToJson').get().destFile
     destDir = layout.buildDirectory.dir('generatedSrc')
 }
 
