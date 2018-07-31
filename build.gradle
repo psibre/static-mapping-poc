@@ -50,10 +50,20 @@ class GenerateSource extends DefaultTask {
             writer.println "class $className {"
             mapping.each { key, value ->
                 writer.println "    static Map get${key.capitalize()}() {"
-                writer.println "        $value"
+                writer.println "        ${unwrapValue(value)}"
                 writer.println "    }"
             }
             writer.println "}"
+        }
+    }
+
+    String unwrapValue(Object value) {
+        if (value instanceof Map) {
+            return value.collect { k, v ->
+                "'$k':${unwrapValue(v)}"
+            }
+        } else {
+            return "'$value'"
         }
     }
 }
