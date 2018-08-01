@@ -14,7 +14,12 @@ dependencies {
 sourceSets {
     main {
         groovy {
-            srcDirs = [layout.buildDirectory.dir('generatedSrc')]
+            srcDirs = ["$buildDir/generatedSrc/main/groovy"]
+        }
+    }
+    test {
+        groovy {
+            srcDirs = ["$buildDir/generatedSrc/test/groovy"]
         }
     }
 }
@@ -30,7 +35,7 @@ tasks.register 'generateSrc', GenerateSource, {
     destTestSrcFile = file("$buildDir/generatedSrc/test/groovy/FooBarTest.groovy")
 }
 
-compileGroovy {
+tasks.withType(GroovyCompile) {
     dependsOn tasks.named('generateSrc')
 }
 
