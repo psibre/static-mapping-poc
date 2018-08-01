@@ -22,19 +22,19 @@ class GenerateSource extends DefaultTask {
         def className = (srcFile.get().asFile.name - '.json').capitalize()
         def srcWriter = destSrcFile.get().asFile.newWriter('UTF-8')
         def testSrcWriter = destTestSrcFile.get().asFile.newWriter('UTF-8')
-        testSrcWriter.println "import org.testng.annotations.Test"
-        srcWriter.println "class $className {"
-        testSrcWriter.println "class ${className}Test {"
+        testSrcWriter.println "import org.testng.annotations.Test\n"
+        srcWriter.println "class $className {\n"
+        testSrcWriter.println "class ${className}Test {\n"
         mapping.each { key, value ->
             srcWriter.println "    static Map get${key.capitalize()}() {"
             srcWriter.println "        ${unwrapToMap(value)}"
-            srcWriter.println "    }"
+            srcWriter.println "    }\n"
             testSrcWriter.println "    @Test"
             testSrcWriter.println "    void test${key.capitalize()}() {"
             unwrapToAssertions("$className", key, value).each { assertion ->
                 testSrcWriter.println "        $assertion"
             }
-            testSrcWriter.println "    }"
+            testSrcWriter.println "    }\n"
         }
         srcWriter.println "}"
         testSrcWriter.println "}"
