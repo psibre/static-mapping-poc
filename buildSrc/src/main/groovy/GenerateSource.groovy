@@ -27,8 +27,14 @@ class GenerateSource extends DefaultTask {
         testSrcWriter.println "class ${className}Test {"
         mapping.each { key, value ->
             srcWriter.println "    static Map get${key.capitalize()}() {"
-            srcWriter.println "        ${unwrapValue(value)}"
+            srcWriter.println "        ${unwrapToMap(value)}"
             srcWriter.println "    }"
+            testSrcWriter.println "    @Test"
+            testSrcWriter.println "    void test${key.capitalize()}() {"
+            unwrapToAssertions("$className", key, value).each { assertion ->
+                testSrcWriter.println "        $assertion"
+            }
+            testSrcWriter.println "    }"
         }
         srcWriter.println "}"
         testSrcWriter.println "}"
@@ -36,13 +42,25 @@ class GenerateSource extends DefaultTask {
         testSrcWriter.close()
     }
 
-    String unwrapValue(Object value) {
+    String unwrapToMap(Object value) {
         if (value instanceof Map) {
             return value.collect { k, v ->
-                "'$k': ${unwrapValue(v)}"
+                "'$k': ${unwrapToMap(v)}"
             }
         } else {
             return "'$value'"
         }
+    }
+
+    List<String> unwrapToAssertions(String prefix, String key, Object value) {
+        def assertions = []
+        if (value instanceof Map) {
+            value.each { k, v ->
+                assertions += unwrapToAssertions("${prefix}['$key']", k, v)
+            }
+        } else {
+            return ["assert ${prefix}['$key'] == '$value'"]
+        }
+        return assertions
     }
 }
