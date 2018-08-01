@@ -26,7 +26,8 @@ tasks.register 'convertCsvToJson', ConvertCsvToJson, {
 
 tasks.register 'generateSrc', GenerateSource, {
     srcFile = tasks.named('convertCsvToJson').get().destFile
-    destDir = layout.buildDirectory.dir('generatedSrc')
+    destSrcFile = file("$buildDir/generatedSrc/main/groovy/FooBar.groovy")
+    destTestSrcFile = file("$buildDir/generatedSrc/test/groovy/FooBarTest.groovy")
 }
 
 compileGroovy {
